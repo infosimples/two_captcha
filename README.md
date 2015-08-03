@@ -1,8 +1,10 @@
+Developed by [Infosimples](https://infosimples.com), a brazilian company that
+offers [data extraction solutions](https://infosimples.com/en/data-engineering)
+and [Ruby on Rails development](https://infosimples.com/en/software-development).
+
 # TwoCaptcha
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/two_captcha`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+TwoCaptcha is a Ruby API for 2Captcha - https://2captcha.com.
 
 ## Installation
 
@@ -24,16 +26,56 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
-## Development
+## Notes
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/console` for an interactive prompt that will allow you to experiment.
+#### Thread-safety
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release` to create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+The API is thread-safe, which means it is perfectly fine to share a client
+instance between multiple threads.
+
+#### Ruby dependencies
+
+TwoCaptcha don't require specific dependencies. That saves you memory and
+avoid conflicts with other gems.
+
+#### Input image format
+
+TODO: Describe input image format
+
+#### Versioning
+
+TwoCaptcha gem uses [Semantic Versioning](http://semver.org/).
+
+#### Ruby versions
+
+This gem has been tested on the following versions of Ruby:
+
+TODO: Test gem with rubies:
+
+* MRI 2.2.2
+* MRI 2.2.0
+* MRI 2.1.5
+* MRI 2.0.0
+* MRI 1.9.3
+
+# Maintainers
+
+* [Marcelo Mita](http://github.com/marcelomita)
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/two_captcha/fork )
+1. Fork it ( https://github.com/infosimples/two_captcha/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+3. **Run/add tests (RSpec)**
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create a new Pull Request
+7. Yay. Thanks for contributing :)
+
+All contributors:
+https://github.com/infosimples/two_captcha/graphs/contributors
+
+
+# License
+
+MIT License. Copyright (C) 2011-2015 Infosimples. https://infosimples.com/
