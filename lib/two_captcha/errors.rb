@@ -92,6 +92,12 @@ module TwoCaptcha
     end
   end
 
+  class NotReported < Error
+    def initialize
+      super('Could not report. Please, contact our support team via email: support@2captcha.com')
+    end
+  end
+
   class Timeout < Error
     def initialize
       super('The captcha was not solved in the expected time')

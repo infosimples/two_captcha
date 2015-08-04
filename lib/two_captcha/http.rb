@@ -3,7 +3,7 @@ module TwoCaptcha
   # TwoCaptcha API client.
   #
   class HTTP
-    BASE_URL = 'http://2captcha.com/'
+    BASE_URL = 'http://2captcha.com'
 
     # Retrieve the contents of a captcha URL supporting HTTPS and redirects.
     #
@@ -30,39 +30,6 @@ module TwoCaptcha
       end
     end
 
-    # Upload a captcha to TwoCaptcha.
-    #
-    # This method will not return the solution.
-    #
-    # @param [String] raw64 The binary image base64 encoded.
-    # @param [String] token The account token.
-    #
-    # @return [String] 2Captcha server's response
-    #
-
-    def self.upload(raw64, token)
-      TwoCaptcha::HTTP.perform('in',
-                               :post,
-                               body: raw64,
-                               key: token,
-                               method: 'base64')
-    end
-
-    # Check if there is an answer already on 2Captcha API.
-    #
-    # @param [String] captcha_id ID received when uploaded the file
-    #
-    # @return [String] 2Captcha server's response
-    #
-
-    def self.check_answer(captcha_id, token)
-      TwoCaptcha::HTTP.perform('res',
-                               :get,
-                               key: token,
-                               action: 'get',
-                               id: captcha_id)
-    end
-
     # Perform an HTTP request to the TwoCaptcha API.
     #
     # @param [String] action  API method name.
@@ -72,14 +39,14 @@ module TwoCaptcha
     # @return [Hash] Response from the TwoCaptcha API.
     #
 
-    def self.perform(action, method = :get, payload = {})
+    def self.request(method = :get, payload = {})
       headers = { 'User-Agent' => TwoCaptcha::USER_AGENT }
       if method == :post
-        uri = URI("#{BASE_URL}/#{action}.php")
+        uri = URI("#{BASE_URL}/in.php")
         req = Net::HTTP::Post.new(uri.request_uri, headers)
         req.set_form_data(payload)
       else
-        uri = URI("#{BASE_URL}/#{action}.php?#{URI.encode_www_form(payload)}")
+        uri = URI("#{BASE_URL}/res.php?#{URI.encode_www_form(payload)}")
         req = Net::HTTP::Get.new(uri.request_uri, headers)
       end
 

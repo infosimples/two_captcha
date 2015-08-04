@@ -61,8 +61,7 @@ module TwoCaptcha
     def decode(options = {})
       decode!(options)
     rescue TwoCaptcha::Error => ex
-      puts ex
-      TwoCaptcha::Captcha.new
+      TwoCaptcha::Captcha.new(status: 'ERROR', message: ex)
     end
 
     # Decode the text from an image (i.e. solve a captcha).
@@ -80,20 +79,50 @@ module TwoCaptcha
     #                                is not raised.
     #
     def decode!(options = {})
-      started_at = Time.now
+      res = upload_captcha(options)
 
+      if res[:status] == 'ERROR'
+        raise_error(res[:message])
+      else
+        captcha_result(res[:message])
+      end
+    end
+
+    # Upload Captcha for 2Captcha API
+    #
+    # @param [String] raw64 Image encoded on Base64
+    #
+    # @return [Hash] Hash with status and message, in case of status 'ERROR',
+    #               message contains the error message, otherwise status is 'OK'
+    #               and message contains captcha_id from 2Captcha API
+    #
+
+    def upload_captcha(options = {})
       raw64   = load_captcha(options)
+
       fail(TwoCaptcha::InvalidCaptcha) if raw64.to_s.empty?
 
-      res = parse_response(TwoCaptcha::HTTP.upload(raw64, token))
+      parse_response(TwoCaptcha::HTTP.request(:post,
+                                              body: raw64,
+                                              key: token,
+                                              method: 'base64'))
+    end
 
-      raise_error(res[:message]) if res[:status] == 'ERROR'
+    # Result from a captcha
+    #
+    # @param [String] captcha_id Requested CAPTCHA ID
+    #
+    # @return [TwoCaptcha::Captcha] Solved captcha
+    #
 
+    def captcha_result(captcha_id)
+      started_at = Time.now
       response = {}
-
       loop do
-        response = parse_response(TwoCaptcha::HTTP.check_answer(res[:message],
-                                                                token))
+        response = parse_response(TwoCaptcha::HTTP.request(:get,
+                                                           key: token,
+                                                           action: 'get',
+                                                           id: captcha_id))
         if response[:message] == 'CAPCHA_NOT_READY'
           sleep(pooling)
           fail(TwoCaptcha::Timeout) if (Time.now - started_at) > timeout
@@ -102,26 +131,54 @@ module TwoCaptcha
           break
         end
       end
-
       Captcha.new(status: response[:status],
-                  id: res[:message],
+                  id: captcha_id,
                   text: response[:message])
     end
 
-    # Parse response from requests
+    # Report incorrectly solved captcha for refund.
     #
-    # @param [String] response The response from TwoCaptcha API.
+    # @param [Integer] id Numeric ID of the captcha.
     #
-    # @return [Hash] Parsed response with status, id and text
+    # @return [TwoCaptcha::Captcha] The captcha with current solution.
     #
-
-    def parse_response(response)
-      res = response.split('|')
-      if res[0] == 'OK'
-        { status: 'OK', message: res[1] }
+    def report_incorrect(captcha_id)
+      response = TwoCaptcha::HTTP.request(:get,
+                                          key: token,
+                                          action: 'reportbad',
+                                          id: captcha_id)
+      if response == 'OK_REPORT_RECORDED'
+        Captcha.new(status: 'OK',
+                    id: id,
+                    message: 'Successfully reported')
       else
-        { status: 'ERROR', message: res[0] }
+        fail(Captcha::NotReported)
       end
+    rescue TwoCaptcha::Error => ex
+      TwoCaptcha::Captcha.new(message: ex)
+    end
+
+    # Get statistics from your account
+    #
+    # @param [Date] date Format: YYYY/MM/DD
+    #
+    # @return [String] Statistics from date in XML.
+    #
+    def statistics(date)
+      TwoCaptcha::HTTP.request(:get,
+                               key: token,
+                               action: 'getstats',
+                               date: date)
+    end
+
+    # Get balance from your account
+    #
+    # @return [Float] Balance in US$.
+    #
+    def balance
+      TwoCaptcha::HTTP.request(:get,
+                               key: token,
+                               action: 'getbalance').to_f
     end
 
     # Parse response from requests
@@ -162,21 +219,6 @@ module TwoCaptcha
       end
     end
 
-    # TODO: Implement report
-    # Report incorrectly solved captcha for refund.
-    #
-    # @param [Integer] id Numeric ID of the captcha.
-    #
-    # @return [TwoCaptcha::Captcha] The captcha with current "correct" value.
-    #
-    # def report_incorrect(id)
-    #   # response = report('report_incorrect', id: id)
-    #   # TwoCaptcha::Captcha.new(response)
-    # end
-
-    # TODO: Implement getStats
-    # TODO: Implement getBalance
-
     private
 
     # Load a captcha raw content encoded in base64 from options.
@@ -207,6 +249,22 @@ module TwoCaptcha
       end
     rescue
       raise TwoCaptcha::InvalidCaptcha
+    end
+
+    # Parse response from requests
+    #
+    # @param [String] response The response from TwoCaptcha API.
+    #
+    # @return [Hash] Parsed response with status, id and text
+    #
+
+    def parse_response(response)
+      res = response.split('|')
+      if res[0] == 'OK'
+        { status: 'OK', message: res[1] }
+      else
+        { status: 'ERROR', message: res[0] }
+      end
     end
   end
 end
