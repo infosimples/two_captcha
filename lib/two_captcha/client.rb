@@ -152,10 +152,12 @@ module TwoCaptcha
                     id: id,
                     message: 'Successfully reported')
       else
-        fail(Captcha::NotReported)
+        fail(TwoCaptcha::NotReported)
       end
     rescue TwoCaptcha::Error => ex
-      TwoCaptcha::Captcha.new(message: ex)
+      TwoCaptcha::Captcha.new(status: 'ERROR',
+                              id: id,
+                              message: ex)
     end
 
     # Get statistics from your account

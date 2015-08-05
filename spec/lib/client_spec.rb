@@ -57,7 +57,7 @@ describe TwoCaptcha::Client do
     describe '#decode!' do
       before(:all) { @captcha = @client.decode!(raw64: image64) }
       it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
-      it { expect(@captcha.text).to eq 'infosimples' }
+      it { expect(@captcha.text.downcase).to eq 'infosimples' }
       it { expect(@captcha.id).to match(/[0-9]{9}/) }
     end
 
