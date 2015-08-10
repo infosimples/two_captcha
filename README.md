@@ -79,6 +79,12 @@ Or install it yourself as:
   client.decode(raw64: Base64.encode64(File.open('path/to/my/captcha/file', 'rb').read))
   ```
 
+  For new reCAPTCHA, add the 'id_constructor = 23' param:
+
+  ```ruby
+  client.decode(url: 'http://bit.ly/1xXZcKo', id_constructor: 23)
+  ```
+
   > Internally, the gem will always convert the image to raw64 (binary base64 encoded).
 
 3. **Retrieve a previously solved captcha**

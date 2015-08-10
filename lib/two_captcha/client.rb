@@ -102,10 +102,13 @@ module TwoCaptcha
 
       fail(TwoCaptcha::InvalidCaptcha) if raw64.to_s.empty?
 
-      parse_response(TwoCaptcha::HTTP.request(:post,
-                                              body: raw64,
-                                              key: token,
-                                              method: 'base64'))
+      params = {}
+      params[:body] = raw64
+      params[:key] = token
+      params[:method] = 'base64'
+      params[:id_constructor] = options[:id_constructor] if options[:id_constructor]
+
+      parse_response(TwoCaptcha::HTTP.request(:post, params)
     end
 
     # Result from a captcha
@@ -123,17 +126,18 @@ module TwoCaptcha
                                                            key: token,
                                                            action: 'get',
                                                            id: captcha_id))
+
         if response[:message] == 'CAPCHA_NOT_READY'
           sleep(pooling)
           fail(TwoCaptcha::Timeout) if (Time.now - started_at) > timeout
-        else
-          raise_error(response[:message]) if response[:status] == 'ERROR'
+        elsif response[:status] == 'ERROR'
+          raise_error(response[:message])
           break
         end
       end
       Captcha.new(status: response[:status],
                   id: captcha_id,
-                  text: response[:message])
+                  text: parse_message(response[:message]))
     end
 
     # Report incorrectly solved captcha for refund.
@@ -266,6 +270,15 @@ module TwoCaptcha
         { status: 'OK', message: res[1] }
       else
         { status: 'ERROR', message: res[0] }
+      end
+    end
+
+    def parse_message(message)
+      res = message.split(':')
+      if res[0] == 'click'
+        return res[1].split('/')
+      else
+        return message
       end
     end
   end

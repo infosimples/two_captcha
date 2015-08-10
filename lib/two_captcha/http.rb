@@ -40,6 +40,7 @@ module TwoCaptcha
     #
 
     def self.request(method = :get, payload = {})
+      payload[:soft_id] = 800
       headers = { 'User-Agent' => TwoCaptcha::USER_AGENT }
       if method == :post
         uri = URI("#{BASE_URL}/in.php")
