@@ -85,7 +85,7 @@ Or install it yourself as:
   client.decode(url: 'http://bit.ly/1xXZcKo', id_constructor: 23)
   ```
 
-  It will return in text a string with a array of the positions clicked by solver.
+  It will return in text a string with an array of the positions clicked by solver.
 
   > Internally, the gem will always convert the image to raw64 (binary base64 encoded).
 
