@@ -108,7 +108,7 @@ module TwoCaptcha
       params[:method] = 'base64'
       params[:id_constructor] = options[:id_constructor] if options[:id_constructor]
 
-      parse_response(TwoCaptcha::HTTP.request(:post, params)
+      parse_response(TwoCaptcha::HTTP.request(:post, params))
     end
 
     # Result from a captcha
@@ -130,8 +130,8 @@ module TwoCaptcha
         if response[:message] == 'CAPCHA_NOT_READY'
           sleep(pooling)
           fail(TwoCaptcha::Timeout) if (Time.now - started_at) > timeout
-        elsif response[:status] == 'ERROR'
-          raise_error(response[:message])
+        else
+          raise_error(response[:message]) if response[:status] == 'ERROR'
           break
         end
       end
@@ -276,7 +276,7 @@ module TwoCaptcha
     def parse_message(message)
       res = message.split(':')
       if res[0] == 'click'
-        return res[1].split('/')
+        return res[1].split('/').to_s
       else
         return message
       end
