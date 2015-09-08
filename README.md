@@ -145,7 +145,7 @@ something like:
 
 ```ruby
 # captcha.text
-"[1,9]"
+"[1, 9]"
 ```
 
 ## Notes

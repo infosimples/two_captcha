@@ -5,6 +5,7 @@ captcha_url      = CREDENTIALS['captcha_url']
 captcha_id       = CREDENTIALS['captcha_id']
 captcha_solution = CREDENTIALS['solution']
 image64          = Base64.encode64(File.open('captchas/1.png', 'rb').read)
+recaptcha64      = Base64.encode64(File.open('captchas/2.jpg', 'rb').read)
 
 describe TwoCaptcha::Client do
   describe 'create' do
@@ -64,6 +65,18 @@ describe TwoCaptcha::Client do
     describe '#balance' do
       before(:all) { @balance = @client.balance }
       it { expect(@balance).to be > 0 }
+    end
+  end
+
+  context 'reCaptcha' do
+    before(:all) { @client = TwoCaptcha.new(token) }
+
+    describe '#decode!' do
+      before(:all) { @captcha = @client.decode!(raw64: recaptcha64, id_constructor: 23) }
+
+      it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
+      it { expect(@captcha.text).to eq('[1, 9]') }
+      it { expect(@captcha.id).to match(/[0-9]{9}/) }
     end
   end
 end

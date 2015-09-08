@@ -276,7 +276,7 @@ module TwoCaptcha
     def parse_message(message)
       res = message.split(':')
       if res[0] == 'click'
-        return res[1].split('/').to_s
+        return res[1].split('/').map { |index| index.to_i }.to_s
       else
         return message
       end
