@@ -79,14 +79,6 @@ Or install it yourself as:
   client.decode(raw64: Base64.encode64(File.open('path/to/my/captcha/file', 'rb').read))
   ```
 
-  For new reCAPTCHA, add the 'id_constructor = 23' param:
-
-  ```ruby
-  client.decode(url: 'http://bit.ly/1xXZcKo', id_constructor: 23)
-  ```
-
-  It will return in text a string with an array of the positions clicked by solver.
-
   > Internally, the gem will always convert the image to raw64 (binary base64 encoded).
 
 3. **Retrieve a previously solved captcha**
@@ -127,6 +119,34 @@ Or install it yourself as:
   stats = client.statistics('2015-08-05')
   stats # XML string with your stats on the date
   ```
+
+## New ReCaptcha
+
+To solve captchas similar to 
+[reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736), you can add
+the param 'id_constructor: 23' to your request.
+
+Please read the oficial documentation at https://2captcha.com/support/faq/30/ for
+more information.
+
+  ```ruby
+  client.decode(url: 'http://bit.ly/1xXZcKo', id_constructor: 23)
+  ```
+
+**Captcha (screenshot)**
+
+> the argument is passed as *url*, *path*, *file*, *raw* or *raw64*
+
+![Example of a captcha based on image clicks](captchas/2.jpg)
+
+The response will be an array a string with an array of the positions where the 
+human clicked to solve the captcha. For the captcha above it should look 
+something like:
+
+```ruby
+# captcha.text
+"[1,9]"
+```
 
 ## Notes
 
