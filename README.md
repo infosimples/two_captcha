@@ -124,7 +124,7 @@ Or install it yourself as:
 7. **Get statistics from a date**
 
   ```ruby
-  stats = client.statistics(2015-08-05)
+  stats = client.statistics('2015-08-05')
   stats # XML string with your stats on the date
   ```
 
