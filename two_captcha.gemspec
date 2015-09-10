@@ -6,7 +6,7 @@ require 'two_captcha/version'
 Gem::Specification.new do |spec|
   spec.name          = "two_captcha"
   spec.version       = TwoCaptcha::VERSION
-  spec.authors       = ["Marcelo Mita"]
+  spec.authors       = ["Marcelo Mita", "Rafael Barbolo"]
   spec.email         = ["team@infosimples.com.br"]
   spec.summary       = %q{Ruby API for 2Captcha (Captcha Solver as a Service)}
   spec.description   = %q{TwoCaptcha allows you to solve captchas with manual labor}

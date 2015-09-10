@@ -8,3 +8,5 @@
 /spec/reports/
 /spec/credentials.yml
 /tmp/
+.ruby-version
+.ruby-gemset

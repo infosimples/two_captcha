@@ -28,27 +28,8 @@ Or install it yourself as:
 
   ```ruby
   # Create a client
-  #
-  client = TwoCaptcha.new('mykey')
+  client = TwoCaptcha.new('my_captcha_key')
   ```
-
-  This will create a client with default parameters. The available params are:
-
-  ```ruby
-  {
-    timeout:  60, # Time in seconds to try and get a solution
-    pooling:  5,  # Time in seconds between two requests on the same captcha_id
-    phrase:   0,  # Specifies if captcha has 2 words (1) or not (0)
-    regsense: 0,  # Specifies if captcha is case sensetive (1) or not (0)
-    numeric:  0,  # Specifies type of captcha (0: not specified, 1: numeric, 2: letters, 3: aphanumeric)
-    calc:     0,  # Specifies math Captcha (1) or not specified (0)
-    min_len:  0,  # Specifies minimum length (1..20) or not specified (0)
-    max_len:  0   # Specifies maximum length (1..20) or not specified (0)
-  }
-  ```
-
-  If not specified the params are not passed for 2Captcha API and it will use API default
-  as the hash above.
 
 2. **Solve a captcha**
 
@@ -56,15 +37,12 @@ Or install it yourself as:
     * **decode** doesn't raise exceptions.
     * **decode!** may raise a *TwoCaptcha::Error* if something goes wrong.
 
-  If the solution is not available, a captcha object will be returned with status 'ERROR' and
-  message with the error.
+  If the solution is not available, an empty captcha object will be returned.
 
   ```ruby
-  captcha = client.decode(url: 'http://bit.ly/1xXZcKo')
-  captcha.status      # Status: 'OK' or 'ERROR'
-  captcha.text        # Solution of the captcha, in case of success
+  captcha = client.decode!(url: 'http://bit.ly/1xXZcKo')
+  captcha.text        # Solution of the captcha
   captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
-  captcha.message     # Error message, in case of error
   ```
 
   You can also specify *path*, *file*, *raw* and *raw64* when decoding an image.
@@ -81,48 +59,48 @@ Or install it yourself as:
 
   > Internally, the gem will always convert the image to raw64 (binary base64 encoded).
 
+  You may also specify any POST parameters specified at
+  https://2captcha.com/setting.
+
 3. **Retrieve a previously solved captcha**
 
   ```ruby
-  captcha = client.captcha_result('130920620') # with 130920620 as the captcha id
+  captcha = client.captcha('130920620') # with 130920620 as the captcha id
   ```
 
-3. **Upload a captcha without get the solution**
+4. **Report incorrectly solved captcha for refund**
 
   ```ruby
-  captcha = client.upload_captcha(url: 'http://bit.ly/1xXZcKo')
-  captcha.status  # 'OK' or 'ERROR'
-  captcha.message # In case of success: captcha id, otherwise: error message
-  ```
-
-5. **Report incorrectly solved captcha for refund**
-
-  ```ruby
-  captcha = client.report_incorrect('130920620') # with 130920620 as the captcha id
-  captcha.status      # Status: 'OK' or 'ERROR'
-  captcha.id          # Numeric ID of the captcha solved by 2Captcha
-  captcha.message     # TwoCaptcha::NotReported error message, in case of error
-                      # and success message otherwise
+  client.report!('130920620') # with 130920620 as the captcha id
+  # return true if successfully reported
   ```
 
   > ***Warning:*** *do not abuse on this method, otherwise you may get banned*
 
-6. **Get your balance on 2Captcha**
+5. **Get your balance on 2Captcha**
 
   ```ruby
-  balance = client.balance
+  client.balance
+  # return a Float balance in USD.
   ```
 
-7. **Get statistics from a date**
+6. **Get usage statistics for a specific date**
 
   ```ruby
-  stats = client.statistics('2015-08-05')
-  stats # XML string with your stats on the date
+  client.stats('2015-08-05')
+  # return an XML string with your usage statistics.
+  ```
+
+7. **Get current 2Captcha load**
+
+  ```ruby
+  client.load
+  # return an XML string with the current service load.
   ```
 
 ## New ReCaptcha
 
-To solve captchas similar to 
+To solve captchas similar to
 [reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736), you can add
 the param 'id_constructor: 23' to your request.
 
@@ -139,13 +117,13 @@ more information.
 
 ![Example of a captcha based on image clicks](captchas/2.jpg)
 
-The response will be an array a string with an array of the positions where the 
-human clicked to solve the captcha. For the captcha above it should look 
+The response will be an array containing the indexes for each image that should
+be clicked counting from left to right. For the captcha above it should look
 something like:
 
 ```ruby
-# captcha.text
-"[1, 9]"
+# captcha.indexes
+[1, 9]
 ```
 
 ## Notes
@@ -168,7 +146,7 @@ you already have this format available on your side, there's no need to do
 convertions before calling the API.
 
 > Our recomendation is to never convert your image format, unless needed. Let
-> the gem convert internally. It may save you resources (CPU, memmory and IO).
+> the gem convert internally. It may save you resources (CPU, memory and IO).
 
 #### Versioning
 
@@ -184,6 +162,7 @@ TwoCaptcha gem uses [Semantic Versioning](http://semver.org/).
 # Maintainers
 
 * [Marcelo Mita](http://github.com/marcelomita)
+* [Rafael Barbolo](http://github.com/barbolo)
 
 ## Contributing
 

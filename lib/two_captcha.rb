@@ -2,12 +2,16 @@ require 'base64'
 require 'json'
 require 'net/http'
 
+# The module TwoCaptcha contains all the code for the two_captcha gem.
+# It acts as a safely namespace that isolates logic from TwoCaptcha from any
+# project that uses it.
+#
 module TwoCaptcha
   # Instantiate TwoCaptcha API client. This is a shortcut to
   # TwoCaptcha::Client.new
   #
-  def self.new(token, options = {})
-    TwoCaptcha::Client.new(token, options)
+  def self.new(key, options = {})
+    TwoCaptcha::Client.new(key, options)
   end
 
   # Base class of a model object returned by TwoCaptcha API.

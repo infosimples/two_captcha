@@ -92,15 +92,25 @@ module TwoCaptcha
     end
   end
 
-  class NotReported < Error
-    def initialize
-      super('Could not report. Please, contact our support team via email: support@2captcha.com')
-    end
-  end
-
   class Timeout < Error
     def initialize
       super('The captcha was not solved in the expected time')
     end
   end
+
+  RESPONSE_ERRORS = {
+    'ERROR_WRONG_USER_KEY'           => TwoCaptcha::WrongUserKey,
+    'ERROR_KEY_DOES_NOT_EXIST'       => TwoCaptcha::InvalidUserKey,
+    'ERROR_ZERO_BALANCE'             => TwoCaptcha::ZeroBalance,
+    'ERROR_NO_SLOT_AVAILABLE'        => TwoCaptcha::NoSlotAvailable,
+    'ERROR_ZERO_CAPTCHA_FILESIZE'    => TwoCaptcha::SmallCaptchaFilesize,
+    'ERROR_TOO_BIG_CAPTCHA_FILESIZE' => TwoCaptcha::BigCaptchaFilesize,
+    'ERROR_WRONG_FILE_EXTENSION'     => TwoCaptcha::WrongFileExtension,
+    'ERROR_IMAGE_TYPE_NOT_SUPPORTED' => TwoCaptcha::ImageNotSupported,
+    'ERROR_IP_NOT_ALLOWED'           => TwoCaptcha::IpNotAllowed,
+    'IP_BANNED'                      => TwoCaptcha::IpBanned,
+    'ERROR_WRONG_ID_FORMAT'          => TwoCaptcha::WrongIdFormat,
+    'ERROR_CAPTCHA_UNSOLVABLE'       => TwoCaptcha::CaptchaUnsolvable,
+    'ERROR_EMPTY_ACTION'             => TwoCaptcha::EmptyAction
+  }
 end

@@ -3,8 +3,6 @@ module TwoCaptcha
   # TwoCaptcha API client.
   #
   class HTTP
-    BASE_URL = 'http://2captcha.com'
-
     # Retrieve the contents of a captcha URL supporting HTTPS and redirects.
     #
     # @param [String] url The captcha URL.
@@ -30,32 +28,73 @@ module TwoCaptcha
       end
     end
 
-    # Perform an HTTP request to the TwoCaptcha API.
+    # Perform an HTTP request with support to multipart requests.
     #
-    # @param [String] action  API method name.
-    # @param [Symbol] method  HTTP method (:get, :post).
-    # @param [Hash]   payload Data to be sent through the HTTP request.
+    # @param [Hash] options Options hash.
+    # @param options [String] url      URL to be requested.
+    # @param options [Symbol] method   HTTP method (:get, :post, :multipart).
+    # @param options [Hash]   payload  Data to be sent through the HTTP request.
+    # @param options [Integer] timeout HTTP open/read timeout in seconds.
     #
-    # @return [Hash] Response from the TwoCaptcha API.
+    # @return [String] Response body of the HTTP request.
     #
-
-    def self.request(method = :get, payload = {})
-      payload[:soft_id] = 800
+    def self.request(options = {})
+      uri     = URI(options[:url])
+      method  = options[:method] || :get
+      payload = options[:payload] || {}
+      timeout = options[:timeout] || 60
       headers = { 'User-Agent' => TwoCaptcha::USER_AGENT }
-      if method == :post
-        uri = URI("#{BASE_URL}/in.php")
+
+      case method
+      when :get
+        uri.query = URI.encode_www_form(payload)
+        req = Net::HTTP::Get.new(uri.request_uri, headers)
+
+      when :post
         req = Net::HTTP::Post.new(uri.request_uri, headers)
         req.set_form_data(payload)
+
+      when :multipart
+        req = Net::HTTP::Post.new(uri.request_uri, headers)
+        boundary, body = prepare_multipart_data(payload)
+        req.content_type = "multipart/form-data; boundary=#{boundary}"
+        req.body = body
+
       else
-        uri = URI("#{BASE_URL}/res.php?#{URI.encode_www_form(payload)}")
-        req = Net::HTTP::Get.new(uri.request_uri, headers)
+        fail TwoCaptcha::ArgumentError, "Illegal HTTP method (#{method})"
       end
 
-      res = Net::HTTP.start(uri.hostname, uri.port) do |http|
-        http.request(req)
-      end
-
+      http = Net::HTTP.new(uri.hostname, uri.port)
+      http.use_ssl = true if (uri.scheme == 'https')
+      http.open_timeout = timeout
+      http.read_timeout = timeout
+      res = http.request(req)
       res.body
+
+    rescue Net::OpenTimeout, Net::ReadTimeout
+      raise TwoCaptcha::Timeout
+    end
+
+    # Prepare the multipart data to be sent via a :multipart request.
+    #
+    # @param [Hash] payload Data to be prepared via a multipart post.
+    #
+    # @return [String, String] Boundary and body for the multipart post.
+    #
+    def self.prepare_multipart_data(payload)
+      boundary = 'randomstr' + rand(1_000_000).to_s # a random unique string
+
+      content = []
+      payload.each do |param, value|
+        content << '--' + boundary
+        content << "Content-Disposition: form-data; name=\"#{param}\""
+        content << ''
+        content << value
+      end
+      content << '--' + boundary + '--'
+      content << ''
+
+      [boundary, content.join("\r\n")]
     end
   end
 end
