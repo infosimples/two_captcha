@@ -4,7 +4,7 @@ and [Ruby on Rails development](https://infosimples.com/en/software-development)
 
 # TwoCaptcha
 
-TwoCaptcha is a Ruby API for 2Captcha - [2captcha.com](http://2captcha.com/?from=1025109).
+TwoCaptcha is a Ruby API for 2Captcha - [2Captcha.com](http://2captcha.com/?from=1025109).
 
 ## Installation
 

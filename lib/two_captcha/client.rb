@@ -71,7 +71,7 @@ module TwoCaptcha
       while decoded_captcha.text.to_s.empty?
         sleep(polling)
         decoded_captcha = captcha(decoded_captcha.id)
-        fail DeathByCaptcha::Timeout if (Time.now - started_at) > timeout
+        fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
       end
 
       decoded_captcha
