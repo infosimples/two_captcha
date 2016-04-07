@@ -43,6 +43,7 @@ describe TwoCaptcha::Client do
       it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
       it { expect(@captcha.text).to eq(captcha_solution) }
       it { expect(@captcha.id).to eq(captcha_id) }
+      it { expect(@captcha.cost).to be > 0 }
     end
 
     describe '#decode!' do
@@ -50,6 +51,7 @@ describe TwoCaptcha::Client do
       it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
       it { expect(@captcha.text.downcase).to eq 'infosimples' }
       it { expect(@captcha.id).to match(/[0-9]{9}/) }
+      it { expect(@captcha.cost).to be > 0 }
     end
 
     describe '#balance' do
@@ -67,6 +69,7 @@ describe TwoCaptcha::Client do
       it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
       it { expect(@captcha.indexes).to eq([1, 9]) }
       it { expect(@captcha.id).to match(/[0-9]{9}/) }
+      it { expect(@captcha.cost).to be > 0 }
     end
   end
 end

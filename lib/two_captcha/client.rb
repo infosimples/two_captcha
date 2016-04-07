@@ -110,13 +110,15 @@ module TwoCaptcha
     # @return [TwoCaptcha::Captcha] The captcha object.
     #
     def captcha(captcha_id)
-      response = request('res', :get, action: 'get', id: captcha_id)
+      response = request('res', :get, action: 'get2', id: captcha_id)
 
       decoded_captcha = TwoCaptcha::Captcha.new(id: captcha_id)
       decoded_captcha.api_response = response
 
-      if response.match(/\AOK\|/)
-        decoded_captcha.text = response.split('|', 2)[1]
+      md = response.match(/\AOK\|(.+)\|(\d+(\.\d+)?)/)
+      if md
+        decoded_captcha.text = md[1]
+        decoded_captcha.cost = md[2].to_f
       end
 
       decoded_captcha
