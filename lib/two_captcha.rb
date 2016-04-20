@@ -1,6 +1,7 @@
 require 'base64'
 require 'json'
 require 'net/http'
+require 'openssl'
 
 # The module TwoCaptcha contains all the code for the two_captcha gem.
 # It acts as a safely namespace that isolates logic from TwoCaptcha from any
