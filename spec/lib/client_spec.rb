@@ -4,7 +4,7 @@ key              = CREDENTIALS['key']
 captcha_id       = CREDENTIALS['captcha_id']
 captcha_solution = CREDENTIALS['solution']
 image64          = Base64.encode64(File.open('captchas/1.png', 'rb').read)
-recaptcha64      = Base64.encode64(File.open('captchas/2.jpg', 'rb').read)
+clickable64      = Base64.encode64(File.open('captchas/2.jpg', 'rb').read)
 
 describe TwoCaptcha::Client do
   describe 'create' do
@@ -58,15 +58,23 @@ describe TwoCaptcha::Client do
     end
   end
 
-  context 'new reCAPTCHA' do
+  context 'clickable CAPTCHA' do
     before(:all) { @client = TwoCaptcha.new(key) }
 
     describe '#decode!' do
-      before(:all) { @captcha = @client.decode!(raw64: recaptcha64, id_constructor: 23) }
+      before(:all) do
+        @captcha = @client.decode!(raw64: clickable64, coordinatescaptcha: 1)
+        @xy1, @xy2 = @captcha.coordinates.sort_by { |e| e[0] }
+      end
 
       it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
-      it { expect(@captcha.indexes).to eq([1, 9]) }
       it { expect(@captcha.id).to match(/[0-9]{9}/) }
+
+      it { expect(@captcha.coordinates.size).to eq(2) }
+      it { expect(@xy1[0]).to be_between(9, 99).inclusive }
+      it { expect(@xy1[1]).to be_between(97, 187).inclusive }
+      it { expect(@xy2[0]).to be_between(187, 279).inclusive }
+      it { expect(@xy2[1]).to be_between(276, 366).inclusive }
     end
   end
 end

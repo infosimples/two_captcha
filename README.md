@@ -1,6 +1,4 @@
-Developed by [Infosimples](https://infosimples.com), a brazilian company that
-offers [data extraction solutions](https://infosimples.com/en/data-engineering)
-and [Ruby on Rails development](https://infosimples.com/en/software-development).
+Developed by [Infosimples](https://infosimples.com), a [big data company](https://infosimples.com/en/data-engineering).
 
 # TwoCaptcha
 
@@ -98,17 +96,17 @@ Or install it yourself as:
   # return an XML string with the current service load.
   ```
 
-## New ReCaptcha
+## Clickable CAPTCHAs (e.g. "No CAPTCHA reCAPTCHA")
 
 To solve captchas similar to
 [reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736), you can add
-the param 'id_constructor: 23' to your request.
+the param `coordinatescaptcha: 1` to your request.
 
-Please read the oficial documentation at https://2captcha.com/support/faq/30/ for
+Please read the oficial documentation at https://2captcha.com/en-api-recaptcha for
 more information.
 
   ```ruby
-  client.decode(url: 'http://bit.ly/1xXZcKo', id_constructor: 23)
+  client.decode(url: 'http://bit.ly/clickcaptcha', coordinatescaptcha: 1)
   ```
 
 **Captcha (screenshot)**
@@ -117,13 +115,12 @@ more information.
 
 ![Example of a captcha based on image clicks](captchas/2.jpg)
 
-The response will be an array containing the indexes for each image that should
-be clicked counting from left to right. For the captcha above it should look
-something like:
+The response will be an array containing coordinates where the captcha should be
+clicked. For the captcha above it should look something like:
 
 ```ruby
-# captcha.indexes
-[1, 9]
+# captcha.coordinates
+[[234, 330], [48, 137]]
 ```
 
 ## Notes
