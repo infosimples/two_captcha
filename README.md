@@ -121,7 +121,7 @@ clicked. For the captcha above it should look something like:
 ## Audio reCAPTCHA v2
 
   ```ruby
-  client.decode(url: 'http://bit.ly/audiocaptcha', recaptchavoice: 1)
+  client.decode(url: 'http://bit.ly/audiorecaptchav2', recaptchavoice: 1)
   ```
 
 The response will be a simple text:
