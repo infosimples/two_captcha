@@ -118,9 +118,17 @@ more information.
 The response will be an array containing coordinates where the captcha should be
 clicked. For the captcha above it should look something like:
 
+## Audio reCAPTCHA v2
+
+  ```ruby
+  client.decode(url: 'http://bit.ly/audiocaptcha', recaptchavoice: 1)
+  ```
+
+The response will be a simple text:
+
 ```ruby
-# captcha.coordinates
-[[234, 330], [48, 137]]
+# captcha.text
+'61267'
 ```
 
 ## Notes

@@ -55,7 +55,7 @@ module TwoCaptcha
     # @option options [Integer] :language       (0) https://2captcha.com/setting
     # @option options [Integer] :header_acao    (0) https://2captcha.com/setting
     # @option options [Integer] :id_constructor (0) 23 if new reCAPTCHA.
-    # @option options [Integer] coordinatescaptcha (0) 1 if clickable captcha.
+    # @option options [Integer] :coordinatescaptcha (0) 1 if clickable captcha.
     #
     # @return [TwoCaptcha::Captcha] The captcha (with solution) if an error is
     #                               not raised.
@@ -88,10 +88,7 @@ module TwoCaptcha
       args = {}
       args[:body]   = options[:raw64]
       args[:method] = 'base64'
-      [:phrase, :regsense, :numeric, :calc, :min_len, :max_len, :language,
-       :header_acao, :id_constructor, :coordinatescaptcha].each do |key|
-        args[key] = options[key] if options[key]
-      end
+      args.merge!(options)
       response = request('in', :multipart, args)
 
       unless response.match(/\AOK\|/)

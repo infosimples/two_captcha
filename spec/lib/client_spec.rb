@@ -5,6 +5,7 @@ captcha_id       = CREDENTIALS['captcha_id']
 captcha_solution = CREDENTIALS['solution']
 image64          = Base64.encode64(File.open('captchas/1.png', 'rb').read)
 clickable64      = Base64.encode64(File.open('captchas/2.jpg', 'rb').read)
+audio64          = Base64.encode64(File.open('captchas/3.mp3', 'rb').read)
 
 describe TwoCaptcha::Client do
   describe 'create' do
@@ -75,6 +76,20 @@ describe TwoCaptcha::Client do
       it { expect(@xy1[1]).to be_between(97, 187).inclusive }
       it { expect(@xy2[0]).to be_between(187, 279).inclusive }
       it { expect(@xy2[1]).to be_between(276, 366).inclusive }
+    end
+  end
+
+  context 'audio reCAPTCHA v2' do
+    before(:all) { @client = TwoCaptcha.new(key) }
+
+    describe '#decode!' do
+      before(:all) do
+        @captcha = @client.decode!(raw64: audio64, recaptchavoice: 1)
+      end
+
+      it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
+      it { expect(@captcha.text.downcase).to eq '61267' }
+      it { expect(@captcha.id).to match(/[0-9]{9}/) }
     end
   end
 end
