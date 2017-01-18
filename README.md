@@ -98,9 +98,34 @@ Or install it yourself as:
 
 ## Clickable CAPTCHAs (e.g. "No CAPTCHA reCAPTCHA")
 
-To solve captchas similar to
-[reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736), you can add
-the param `coordinatescaptcha: 1` to your request.
+There are two ways of solving captchas similar to
+[reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736).
+
+### (Prefered) Sending the `googlekey` and `pageurl` parameters
+
+This method requires no browser emulation. You can send two parameters that identify website in which the captcha is found.
+
+Please read the oficial documentation at https://2captcha.com/newapi-recaptcha-en for
+more information.
+
+  ```ruby
+  options = {
+    googlekey: 'xyz',
+    pageurl: 'http://example.com/example=1'
+  }
+
+  client.decode_recaptcha_v2(options)
+  ```
+
+  The response will be a code that validates the form, like the following:
+
+  ```ruby
+  "03AHJ_VuuHAqJKxcTH6sbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcw0u2KqgjHPiXWwlulOw0Ef82tH6SOSbXdelgkvdDl8HreKFug05zfadw2n-A2HoTgYteVA53Q46VatEcZofa5eKfaWgvrPS-IP1DpV4bnUEG69-VbWAx7fJ-p4rHSxq-ZYesBkk9yYFrAiT_70uSz8lg3iqRImfRW91RIkEq8A5UBn4vABUQvlDV4eoKpeNUKDmHOABHkdsV8_1KEgCbabIwsIuIkN1_hw-Mkg0NRdWuXgNtOWen0Zv65yl6D31yhyLV2s0h3ygQwrpxJpBWs7o_rG2TaVfi0y9S5cYr-YlMTHszvMQCVllf5WAiNAgV28JuAnFH5WqRHqT56Tz6ZVNigIToEzq1tnfuewgmJuyyP_woy_MGRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdgIPT9Xdbo_dm4pLGZ0CNd5WQcjil_kZN_uErRssv9r8j5SC6tsIPBneQLqqqsg8Hyt9kjIh0N10d6-sFeV3QWw-OuzCrPSNYc-_AxvwaB0GUAOmHDDbj8kKz1oqfdBwJienRm246cbstqdc7uAHHuLWLpt1A5W-56PEbb3Zs-HNo3kcjvlJcfrOVJKW68-G3S635EJ9SBm9GFKzFojEu4-TF9CvYNJKaXY9dDev_TVbBaWpWN2Ctx5hHKRbtD1_g2LsGUTDkpo7wrf4pbAyP34zeMRBI1wrrV12PBKnuafaMjy2KIFLt0LM91uWiBzEC61AiSKKEwP2nydRIyIFGwbLFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZw3sra3yRt9ziDVKKDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05kr5R6OVHfeUszn5OiYeVh8Q_gTMsEf4wdaOsQWGZhWQIS8Vi_6IYzwQsnOtYdI6T8q4IDrQh-9eemVn0gNI6gdyknStQ7DoujdPGt20qzpURMwHaw"
+  ```
+
+### Sending the challenge image
+
+You can add the param `coordinatescaptcha: 1` to your request.
 
 Please read the oficial documentation at https://2captcha.com/en-api-recaptcha for
 more information.
@@ -117,6 +142,11 @@ more information.
 
 The response will be an array containing coordinates where the captcha should be
 clicked. For the captcha above it should look something like:
+
+  ```ruby
+  # captcha.text
+  "coordinates:x=50.66999816894531,y=130.3300018310547;x=236.66998291015625,y=328.3299865722656"
+  ```
 
 ## Audio reCAPTCHA v2
 
@@ -157,17 +187,12 @@ convertions before calling the API.
 
 TwoCaptcha gem uses [Semantic Versioning](http://semver.org/).
 
-#### Ruby versions tested
+#### Tested Ruby versions
 
 * MRI 2.2.2
 * MRI 2.2.0
 * MRI 2.1.4
 * MRI 2.0.0
-
-# Maintainers
-
-* [Marcelo Mita](http://github.com/marcelomita)
-* [Rafael Barbolo](http://github.com/barbolo)
 
 ## Contributing
 

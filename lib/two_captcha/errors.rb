@@ -98,6 +98,12 @@ module TwoCaptcha
     end
   end
 
+  class GoogleKey < Error
+    def initialize
+      super('Missing googlekey parameter')
+    end
+  end
+
   RESPONSE_ERRORS = {
     'ERROR_WRONG_USER_KEY'           => TwoCaptcha::WrongUserKey,
     'ERROR_KEY_DOES_NOT_EXIST'       => TwoCaptcha::InvalidUserKey,
@@ -111,6 +117,7 @@ module TwoCaptcha
     'IP_BANNED'                      => TwoCaptcha::IpBanned,
     'ERROR_WRONG_ID_FORMAT'          => TwoCaptcha::WrongIdFormat,
     'ERROR_CAPTCHA_UNSOLVABLE'       => TwoCaptcha::CaptchaUnsolvable,
-    'ERROR_EMPTY_ACTION'             => TwoCaptcha::EmptyAction
+    'ERROR_EMPTY_ACTION'             => TwoCaptcha::EmptyAction,
+    'ERROR_GOOGLEKEY'                => TwoCaptcha::GoogleKey
   }
 end

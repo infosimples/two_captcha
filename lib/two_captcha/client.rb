@@ -78,6 +78,61 @@ module TwoCaptcha
       decoded_captcha
     end
 
+    #
+    # Solve reCAPTCHA v2.
+    #
+    # @param [Hash] options Options hash. Check docs for the method decode!.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_recaptcha_v2(options = {})
+      decode_recaptcha_v2!(options)
+    rescue TwoCaptcha::Error => ex
+      TwoCaptcha::Captcha.new
+    end
+
+    #
+    # Solve reCAPTCHA v2.
+    #
+    # @param [Hash] options Options hash.
+    # @option options [String]  :googlekey The open key of the site in which recaptcha is installed.
+    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_recaptcha_v2!(options = {})
+      started_at = Time.now
+
+      fail(TwoCaptcha::GoogleKey) if options[:googlekey].empty?
+
+      payload_in = {
+        method: 'userrecaptcha',
+        googlekey: options[:googlekey],
+        pageurl: options[:pageurl]
+      }
+
+      response_in = request('in', :get, payload_in)
+      status, captcha_id = response_in.split('|')
+
+      payload_res = {
+        action: 'get',
+        json: '1',
+        id: captcha_id
+      }
+
+      response_res = request('res', :get, payload_res)
+      result = JSON.load(response_res)
+
+      while ['CAPCHA_NOT_READY', 'CAPTCHA_NOT_READY'].include? result['request']
+        sleep(polling)
+        response_res = request('res', :get, payload_res)
+        result = JSON.load(response_res)
+        fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
+      end
+
+      result['request']
+    end
+
     # Upload a captcha to 2Captcha.
     #
     # This method will not return the solution. It helps on separating concerns.
