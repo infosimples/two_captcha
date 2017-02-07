@@ -1,4 +1,4 @@
-Developed by [Infosimples](https://infosimples.com), a [big data company](https://infosimples.com/en/data-engineering).
+Developed by [Infosimples](https://infosimples.com).
 
 # TwoCaptcha
 
