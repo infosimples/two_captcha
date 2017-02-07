@@ -14,6 +14,18 @@ module TwoCaptcha
     end
   end
 
+  class Timeout < Error
+    def initialize
+      super('The captcha was not solved in the expected time')
+    end
+  end
+
+  class GoogleKey < Error
+    def initialize
+      super('Missing googlekey parameter')
+    end
+  end
+
   class WrongUserKey < Error
     def initialize
       super('Wrong “key” parameter format, it should contain 32 symbols')
@@ -92,15 +104,27 @@ module TwoCaptcha
     end
   end
 
-  class Timeout < Error
+  class CaptchaImageBlocked < Error
     def initialize
-      super('The captcha was not solved in the expected time')
+      super('You have sent an image, that is unrecognizable and which is saved in our database as such. Usually this happens when the site where you get the captcha from has stopped sending you captcha and started giving you a “deny access” cap.')
     end
   end
 
-  class GoogleKey < Error
+  class WrongCaptchaId < Error
     def initialize
-      super('Missing googlekey parameter')
+      super('You are trying to get the answer or complain a captcha that was submitted more than 15 minutes ago.')
+    end
+  end
+
+  class BadDuplicates < Error
+    def initialize
+      super('Error is returned when 100% accuracy feature is enabled. The error means that max numbers of tries is reached but min number of matches not found.')
+    end
+  end
+
+  class ReportNotRecorded < Error
+    def initialize
+      super('Error is returned to your complain request (reportbad) if you already complained lots of correctly solved captchas.')
     end
   end
 
@@ -118,6 +142,10 @@ module TwoCaptcha
     'ERROR_WRONG_ID_FORMAT'          => TwoCaptcha::WrongIdFormat,
     'ERROR_CAPTCHA_UNSOLVABLE'       => TwoCaptcha::CaptchaUnsolvable,
     'ERROR_EMPTY_ACTION'             => TwoCaptcha::EmptyAction,
-    'ERROR_GOOGLEKEY'                => TwoCaptcha::GoogleKey
+    'ERROR_GOOGLEKEY'                => TwoCaptcha::GoogleKey,
+    'ERROR_CAPTCHAIMAGE_BLOCKED'     => TwoCaptcha::CaptchaImageBlocked,
+    'ERROR_WRONG_CAPTCHA_ID'         => TwoCaptcha::WrongCaptchaId,
+    'ERROR_BAD_DUPLICATES'           => TwoCaptcha::BadDuplicates,
+    'REPORT_NOT_RECORDED'            => TwoCaptcha::ReportNotRecorded,
   }
 end
