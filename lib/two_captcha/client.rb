@@ -121,16 +121,14 @@ module TwoCaptcha
       }
 
       response_res = request('res', :get, payload_res)
-      result = JSON.load(response_res)
 
-      while ['CAPCHA_NOT_READY', 'CAPTCHA_NOT_READY'].include? result['request']
+      while response_res.match(/CAPTCHA_NOT_READY|CAPCHA_NOT_READY/i)
         sleep(polling)
         response_res = request('res', :get, payload_res)
-        result = JSON.load(response_res)
         fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
       end
 
-      result['request']
+      JSON.load(response_res)['request']
     end
 
     # Upload a captcha to 2Captcha.
