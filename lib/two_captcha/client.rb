@@ -105,30 +105,21 @@ module TwoCaptcha
 
       fail(TwoCaptcha::GoogleKey) if options[:googlekey].empty?
 
-      payload_in = {
+      upload_options = {
         method: 'userrecaptcha',
         googlekey: options[:googlekey],
         pageurl: options[:pageurl]
       }
+      decoded_captcha = upload(upload_options)
 
-      response_in = request('in', :get, payload_in)
-      status, captcha_id = response_in.split('|')
-
-      payload_res = {
-        action: 'get',
-        json: '1',
-        id: captcha_id
-      }
-
-      response_res = request('res', :get, payload_res)
-
-      while response_res.match(/CAPTCHA_NOT_READY|CAPCHA_NOT_READY/i)
-        sleep(polling)
-        response_res = request('res', :get, payload_res)
+      # pool untill the answer is ready
+      while decoded_captcha.text.to_s.empty?
+        sleep([polling, 10].max) # sleep at least 10 seconds
+        decoded_captcha = captcha(decoded_captcha.id)
         fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
       end
 
-      JSON.load(response_res)['request']
+      decoded_captcha
     end
 
     # Upload a captcha to 2Captcha.
@@ -139,8 +130,8 @@ module TwoCaptcha
     #
     def upload(options = {})
       args = {}
-      args[:body]   = options[:raw64]
-      args[:method] = 'base64'
+      args[:body]   = options[:raw64] if options[:raw64]
+      args[:method] = options[:method] || 'base64'
       args.merge!(options)
       response = request('in', :multipart, args)
 

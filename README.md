@@ -103,10 +103,11 @@ There are two ways of solving captchas similar to
 
 ### (Prefered) Sending the `googlekey` and `pageurl` parameters
 
-This method requires no browser emulation. You can send two parameters that identify website in which the captcha is found.
+This method requires no browser emulation. You can send two parameters that
+identify the website in which the captcha is found.
 
-Please read the oficial documentation at https://2captcha.com/newapi-recaptcha-en for
-more information.
+Please read the [oficial documentation](https://2captcha.com/newapi-recaptcha-en)
+for more information.
 
   ```ruby
   options = {
@@ -115,12 +116,15 @@ more information.
   }
 
   client.decode_recaptcha_v2(options)
+  captcha.text        # Solution of the captcha
+  captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
   ```
 
-  The response will be a code that validates the form, like the following:
+  The solution (`captcha.text`) will be a code that validates the form, like the
+  following:
 
   ```ruby
-  "03AHJ_VuuHAqJKxcTH6sbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcw0u2KqgjHPiXWwlulOw0Ef82tH6SOSbXdelgkvdDl8HreKFug05zfadw2n-A2HoTgYteVA53Q46VatEcZofa5eKfaWgvrPS-IP1DpV4bnUEG69-VbWAx7fJ-p4rHSxq-ZYesBkk9yYFrAiT_70uSz8lg3iqRImfRW91RIkEq8A5UBn4vABUQvlDV4eoKpeNUKDmHOABHkdsV8_1KEgCbabIwsIuIkN1_hw-Mkg0NRdWuXgNtOWen0Zv65yl6D31yhyLV2s0h3ygQwrpxJpBWs7o_rG2TaVfi0y9S5cYr-YlMTHszvMQCVllf5WAiNAgV28JuAnFH5WqRHqT56Tz6ZVNigIToEzq1tnfuewgmJuyyP_woy_MGRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdgIPT9Xdbo_dm4pLGZ0CNd5WQcjil_kZN_uErRssv9r8j5SC6tsIPBneQLqqqsg8Hyt9kjIh0N10d6-sFeV3QWw-OuzCrPSNYc-_AxvwaB0GUAOmHDDbj8kKz1oqfdBwJienRm246cbstqdc7uAHHuLWLpt1A5W-56PEbb3Zs-HNo3kcjvlJcfrOVJKW68-G3S635EJ9SBm9GFKzFojEu4-TF9CvYNJKaXY9dDev_TVbBaWpWN2Ctx5hHKRbtD1_g2LsGUTDkpo7wrf4pbAyP34zeMRBI1wrrV12PBKnuafaMjy2KIFLt0LM91uWiBzEC61AiSKKEwP2nydRIyIFGwbLFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZw3sra3yRt9ziDVKKDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05kr5R6OVHfeUszn5OiYeVh8Q_gTMsEf4wdaOsQWGZhWQIS8Vi_6IYzwQsnOtYdI6T8q4IDrQh-9eemVn0gNI6gdyknStQ7DoujdPGt20qzpURMwHaw"
+  "1JJHJ_VuuHAqJKxcaasbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcwkjsRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdkjsakFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZasDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05ajkPGt20qzpURMwHaw"
   ```
 
 ### Sending the challenge image

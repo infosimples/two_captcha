@@ -92,4 +92,22 @@ describe TwoCaptcha::Client do
       it { expect(@captcha.id).to match(/[0-9]{9}/) }
     end
   end
+
+  context 'image reCAPTCHA v2' do
+    before(:all) { @client = TwoCaptcha.new(key) }
+
+    describe '#decode_recaptcha_v2!' do
+      before(:all) do
+        options = {
+          googlekey: '6Le-wvkSAAAAAPBMRTvw0Q4Muexq9bi0DJwx_mJ-',
+          pageurl: 'https://www.google.com/recaptcha/api2/demo'
+        }
+        @captcha = @client.decode_recaptcha_v2!(options)
+      end
+
+      it { expect(@captcha).to be_a(TwoCaptcha::Captcha) }
+      it { expect(@captcha.text.size).to be > 50 } # not perfect, I know
+      it { expect(@captcha.id).to match(/[0-9]{9}/) }
+    end
+  end
 end
