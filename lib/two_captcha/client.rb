@@ -122,6 +122,55 @@ module TwoCaptcha
       decoded_captcha
     end
 
+    #
+    # Solve reCAPTCHA v3.
+    #
+    # @param [Hash] options Options hash. Check docs for the method decode!.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_recaptcha_v3(options = {})
+      decode_recaptcha_v3!(options)
+    rescue TwoCaptcha::Error => ex
+      TwoCaptcha::Captcha.new
+    end
+
+    #
+    # Solve reCAPTCHA v3.
+    #
+    # @param [Hash] options Options hash.
+    # @option options [String]  :googlekey The open key of the site in which recaptcha is installed.
+    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    # @option options [String]  :action The action paramenter present on the page that uses recaptcha.
+    # @option options [String]  :min_score The minimum score necessary to pass the challenge.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_recaptcha_v3!(options = {})
+      started_at = Time.now
+
+      fail(TwoCaptcha::GoogleKey) if options[:googlekey].empty?
+
+      upload_options = {
+        method:    'userrecaptcha',
+        version:   'v3',
+        googlekey: options[:googlekey],
+        pageurl:   options[:pageurl],
+        action:    options[:action],
+        min_score: options[:min_score]
+      }
+      decoded_captcha = upload(upload_options)
+
+      # pool untill the answer is ready
+      while decoded_captcha.text.to_s.empty?
+        sleep([polling, 10].max) # sleep at least 10 seconds
+        decoded_captcha = captcha(decoded_captcha.id)
+        fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
+      end
+
+      decoded_captcha
+    end
+
     # Upload a captcha to 2Captcha.
     #
     # This method will not return the solution. It helps on separating concerns.
@@ -167,11 +216,12 @@ module TwoCaptcha
     # Report incorrectly solved captcha for refund.
     #
     # @param [Integer] id Numeric ID of the captcha.
+    # @param [Integer] action 'reportbad' (default) or 'reportgood'.
     #
     # @return [Boolean] true if correctly reported
     #
-    def report!(captcha_id)
-      response = request('res', :get, action: 'reportbad', id: captcha_id)
+    def report!(captcha_id, action = 'reportbad')
+      response = request('res', :get, action: action, id: captcha_id)
       response == 'OK_REPORT_RECORDED'
     end
 

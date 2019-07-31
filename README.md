@@ -66,10 +66,13 @@ Or install it yourself as:
   captcha = client.captcha('130920620') # with 130920620 as the captcha id
   ```
 
-4. **Report incorrectly solved captcha for refund**
+4. **Report incorrectly (for refund) or correctly (useful for reCAPTCHA v3) solved captcha**
 
   ```ruby
-  client.report!('130920620') # with 130920620 as the captcha id
+  client.report!('130920620', 'reportbad') # with 130920620 as the captcha id
+  # return true if successfully reported
+
+  client.report!('256892751', 'reportgood') # with 256892751 as the captcha id
   # return true if successfully reported
   ```
 
@@ -96,7 +99,7 @@ Or install it yourself as:
   # return an XML string with the current service load.
   ```
 
-## Clickable CAPTCHAs (e.g. "No CAPTCHA reCAPTCHA")
+## reCAPTCHA v2 (e.g. "No CAPTCHA reCAPTCHA")
 
 There are two ways of solving captchas similar to
 [reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736).
@@ -115,7 +118,7 @@ for more information.
     pageurl: 'http://example.com/example=1'
   }
 
-  client.decode_recaptcha_v2(options)
+  captcha = client.decode_recaptcha_v2(options)
   captcha.text        # Solution of the captcha
   captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
   ```
@@ -164,6 +167,37 @@ The response will be a simple text:
 # captcha.text
 '61267'
 ```
+
+## reCAPTCHA v3
+
+This method requires no browser emulation. You can send four parameters that
+identify the website in which the CAPTCHA is found and the minimum score
+(0.3, 0.5 or 0.7) you desire.
+
+**It's strongly recommended to use a minimum score of 0.3 as higher scores are extremely rare.**
+
+Please read the [oficial documentation](https://2captcha.com/2captcha-api#solving_recaptchav3)
+for more information.
+
+  ```ruby
+  options = {
+    googlekey: 'xyz',
+    pageurl:   'http://example.com/example=1',
+    action:    'verify',
+    min_score: 0.3
+  }
+
+  captcha = client.decode_recaptcha_v3(options)
+  captcha.text        # Solution of the captcha
+  captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
+  ```
+
+The solution (`captcha.text`) will be a code that validates the form, like the
+following:
+
+  ```ruby
+  "1JJHJ_VuuHAqJKxcaasbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcwkjsRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdkjsakFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZasDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05ajkPGt20qzpURMwHaw"
+  ```
 
 ## Notes
 
