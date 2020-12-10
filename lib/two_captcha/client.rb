@@ -108,7 +108,8 @@ module TwoCaptcha
       upload_options = {
         method: 'userrecaptcha',
         googlekey: options[:googlekey],
-        pageurl: options[:pageurl]
+        pageurl: options[:pageurl],
+        invisible: options[:invisible]||0,
       }
       decoded_captcha = upload(upload_options)
 
