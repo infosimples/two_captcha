@@ -171,6 +171,50 @@ module TwoCaptcha
       decoded_captcha
     end
 
+    #
+    # Solve hCaptcha.
+    #
+    # @param [Hash] options Options hash. Check docs for the method decode_hcaptcha!.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_hcaptcha(options = {})
+      decode_hcaptcha!(options)
+    rescue TwoCaptcha::Error => ex
+      TwoCaptcha::Captcha.new
+    end
+
+    #
+    # Solve hCaptcha.
+    #
+    # @param [Hash] options Options hash.
+    # @option options [String]  :sitekey The  key of the site in which hCaptcha is installed.
+    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_hcaptcha!(options = {})
+      started_at = Time.now
+
+      fail(TwoCaptcha::GoogleKey) if options[:sitekey].empty?
+
+      upload_options = {
+        method:    'hcaptcha',
+        sitekey:   options[:sitekey],
+        pageurl:   options[:pageurl]
+      }
+      decoded_captcha = upload(upload_options)
+
+      # pool untill the answer is ready
+      while decoded_captcha.text.to_s.empty?
+        sleep([polling, 10].max) # sleep at least 10 seconds
+        decoded_captcha = captcha(decoded_captcha.id)
+        fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
+      end
+
+      decoded_captcha
+    end
+
     # Upload a captcha to 2Captcha.
     #
     # This method will not return the solution. It helps on separating concerns.

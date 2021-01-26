@@ -26,6 +26,12 @@ module TwoCaptcha
     end
   end
 
+  class SiteKey < Error
+    def initialize
+      super('Missing sitekey parameter')
+    end
+  end
+
   class WrongUserKey < Error
     def initialize
       super('Wrong “key” parameter format, it should contain 32 symbols')
