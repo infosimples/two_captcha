@@ -105,11 +105,7 @@ module TwoCaptcha
 
       fail(TwoCaptcha::GoogleKey) if options[:googlekey].empty?
 
-      upload_options = {
-        method: 'userrecaptcha',
-        googlekey: options[:googlekey],
-        pageurl: options[:pageurl]
-      }
+      upload_options = { method: 'userrecaptcha' }.merge(options)
       decoded_captcha = upload(upload_options)
 
       # pool untill the answer is ready
@@ -154,11 +150,7 @@ module TwoCaptcha
       upload_options = {
         method:    'userrecaptcha',
         version:   'v3',
-        googlekey: options[:googlekey],
-        pageurl:   options[:pageurl],
-        action:    options[:action],
-        min_score: options[:min_score]
-      }
+      }.merge(options)
       decoded_captcha = upload(upload_options)
 
       # pool untill the answer is ready
@@ -198,11 +190,7 @@ module TwoCaptcha
 
       fail(TwoCaptcha::GoogleKey) if options[:sitekey].empty?
 
-      upload_options = {
-        method:    'hcaptcha',
-        sitekey:   options[:sitekey],
-        pageurl:   options[:pageurl]
-      }
+      upload_options = { method: 'hcaptcha' }.merge(options)
       decoded_captcha = upload(upload_options)
 
       # pool untill the answer is ready
