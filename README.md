@@ -223,6 +223,21 @@ following:
   captcha.text # Solution of the captcha
   ```
 
+## Using proxy or other custom options
+
+You are allowed to use custom options like `proxy`, `proxytype` or `userAgent` whenever the 2Captcha API supports it. Example:
+
+  ```ruby
+  options = {
+    sitekey: 'xyz',
+    pageurl: 'http://example.com/example=1',
+    proxy: 'login:password@123.123.123.123:3128',
+    userAgent: 'user agent'
+  }
+
+  captcha = client.decode_hcaptcha!(options)
+  ```
+
 ## Notes
 
 #### Thread-safety

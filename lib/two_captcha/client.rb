@@ -18,9 +18,9 @@ module TwoCaptcha
     # @return [TwoCaptcha::Client] A Client instance.
     #
     def initialize(key, options = {})
-      self.key    = key
-      self.timeout  = options[:timeout] || 60
-      self.polling  = options[:polling] || 5
+      self.key     = key
+      self.timeout = options[:timeout] || 60
+      self.polling = options[:polling] || 5
     end
 
     # Decode the text from an image (i.e. solve a captcha).
@@ -148,8 +148,8 @@ module TwoCaptcha
       fail(TwoCaptcha::GoogleKey) if options[:googlekey].empty?
 
       upload_options = {
-        method:    'userrecaptcha',
-        version:   'v3',
+        method:  'userrecaptcha',
+        version: 'v3',
       }.merge(options)
       decoded_captcha = upload(upload_options)
 
@@ -188,7 +188,7 @@ module TwoCaptcha
     def decode_hcaptcha!(options = {})
       started_at = Time.now
 
-      fail(TwoCaptcha::GoogleKey) if options[:sitekey].empty?
+      fail(TwoCaptcha::SiteKey) if options[:sitekey].empty?
 
       upload_options = { method: 'hcaptcha' }.merge(options)
       decoded_captcha = upload(upload_options)
