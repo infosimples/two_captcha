@@ -15,264 +15,197 @@ gem 'two_captcha'
 
 And then execute:
 
-    $ bundle
+```bash
+$ bundle
+````
 
 Or install it yourself as:
 
-    $ gem install two_captcha
+```bash
+$ gem install two_captcha
+````
 
 ## Usage
 
-1. **Create a client**
-
-  ```ruby
-  # Create a client
-  client = TwoCaptcha.new('my_captcha_key')
-  ```
-
-2. **Solve a captcha**
-
-  There are two methods available: **decode** and **decode!**
-    * **decode** doesn't raise exceptions.
-    * **decode!** may raise a *TwoCaptcha::Error* if something goes wrong.
-
-  If the solution is not available, an empty captcha object will be returned.
-
-  ```ruby
-  captcha = client.decode!(url: 'http://bit.ly/1xXZcKo')
-  captcha.text        # Solution of the captcha
-  captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
-  ```
-
-  You can also specify *path*, *file*, *raw* and *raw64* when decoding an image.
-
-  ```ruby
-  client.decode(path: 'path/to/my/captcha/file')
-
-  client.decode(file: File.open('path/to/my/captcha/file', 'rb'))
-
-  client.decode(raw: File.open('path/to/my/captcha/file', 'rb').read)
-
-  client.decode(raw64: Base64.encode64(File.open('path/to/my/captcha/file', 'rb').read))
-  ```
-
-  > Internally, the gem will always convert the image to raw64 (binary base64 encoded).
-
-  You may also specify any POST parameters specified at
-  https://2captcha.com/setting.
-
-3. **Retrieve a previously solved captcha**
-
-  ```ruby
-  captcha = client.captcha('130920620') # with 130920620 as the captcha id
-  ```
-
-4. **Report incorrectly (for refund) or correctly (useful for reCAPTCHA v3) solved captcha**
-
-  ```ruby
-  client.report!('130920620', 'reportbad') # with 130920620 as the captcha id
-  # return true if successfully reported
-
-  client.report!('256892751', 'reportgood') # with 256892751 as the captcha id
-  # return true if successfully reported
-  ```
-
-  > ***Warning:*** *do not abuse on this method, otherwise you may get banned*
-
-5. **Get your balance on 2Captcha**
-
-  ```ruby
-  client.balance
-  # return a Float balance in USD.
-  ```
-
-6. **Get usage statistics for a specific date**
-
-  ```ruby
-  client.stats('2015-08-05')
-  # return an XML string with your usage statistics.
-  ```
-
-7. **Get current 2Captcha load**
-
-  ```ruby
-  client.load
-  # return an XML string with the current service load.
-  ```
-
-## reCAPTCHA v2 (e.g. "No CAPTCHA reCAPTCHA")
-
-There are two ways of solving captchas similar to
-[reCAPTCHA v2](https://support.google.com/recaptcha/?hl=en#6262736).
-
-### (Prefered) Sending the `googlekey` and `pageurl` parameters
-
-This method requires no browser emulation. You can send two parameters that
-identify the website in which the captcha is found.
-
-Please read the [oficial documentation](https://2captcha.com/newapi-recaptcha-en)
-for more information.
-
-  ```ruby
-  options = {
-    googlekey: 'xyz',
-    pageurl: 'http://example.com/example=1'
-  }
-
-  captcha = client.decode_recaptcha_v2(options)
-  captcha.text        # Solution of the captcha
-  captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
-  ```
-
-  The solution (`captcha.text`) will be a code that validates the form, like the
-  following:
-
-  ```ruby
-  "1JJHJ_VuuHAqJKxcaasbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcwkjsRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdkjsakFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZasDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05ajkPGt20qzpURMwHaw"
-  ```
-
-### Sending the challenge image
-
-You can add the param `coordinatescaptcha: 1` to your request.
-
-Please read the oficial documentation at https://2captcha.com/en-api-recaptcha for
-more information.
-
-  ```ruby
-  client.decode(url: 'http://bit.ly/clickcaptcha', coordinatescaptcha: 1)
-  ```
-
-**Captcha (screenshot)**
-
-> the argument is passed as *url*, *path*, *file*, *raw* or *raw64*
-
-![Example of a captcha based on image clicks](captchas/2.jpg)
-
-The response will be an array containing coordinates where the captcha should be
-clicked. For the captcha above it should look something like:
-
-  ```ruby
-  # captcha.text
-  "coordinates:x=50.66999816894531,y=130.3300018310547;x=236.66998291015625,y=328.3299865722656"
-  ```
-
-## Audio reCAPTCHA v2
-
-  ```ruby
-  client.decode(url: 'http://bit.ly/audiorecaptchav2', recaptchavoice: 1)
-  ```
-
-The response will be a simple text:
+### 1. Create a client
 
 ```ruby
-# captcha.text
-'61267'
+client = TwoCaptcha.new('my_key')
 ```
 
-## reCAPTCHA v3
+### 2. Solve a CAPTCHA
 
-This method requires no browser emulation. You can send four parameters that
-identify the website in which the CAPTCHA is found and the minimum score
-(0.3, 0.5 or 0.7) you desire.
+There are two types of methods available: `decode` and `decode!`:
 
-**It's strongly recommended to use a minimum score of 0.3 as higher scores are extremely rare.**
+- `decode` does not raise exceptions.
+- `decode!` may raise a `TwoCaptcha::Error` if something goes wrong.
 
-Please read the [oficial documentation](https://2captcha.com/2captcha-api#solving_recaptchav3)
-for more information.
+If the solution is not available, an empty solution object will be returned.
+
+```ruby
+captcha = client.decode_image!(url: 'http://bit.ly/1xXZcKo')
+captcha.text        # CAPTCHA solution
+captcha.id          # CAPTCHA numeric id
+```
+
+#### Image CAPTCHA
+
+You can specify `file`, `path`, `raw`, `raw64` and `url` when decoding an image.
+
+```ruby
+client.decode_image!(file: File.open('path/to/my/captcha/file', 'rb'))
+client.decode_image!(path: 'path/to/my/captcha/file')
+client.decode_image!(raw: File.open('path/to/my/captcha/file', 'rb').read)
+client.decode_image!(raw64: Base64.encode64(File.open('path/to/my/captcha/file', 'rb').read))
+client.decode_image!(url: 'http://bit.ly/1xXZcKo')
+```
+
+You may also specify any POST parameters specified at https://2captcha.com/setting.
+
+#### reCAPTCHA v2
+
+```ruby
+captcha = client.decode_recaptcha_v2!(
+  googlekey: 'xyz',
+  pageurl:   'http://example.com/example=1',
+)
+
+# The response will be a text (token), which you can access with the `text` method.
+
+captcha.text
+"03AOPBWq_RPO2vLzyk0h8gH0cA2X4v3tpYCPZR6Y4yxKy1s3Eo7CHZRQntxrd..."
+```
+
+*Parameters:*
+
+- `googlekey`: the Google key for the reCAPTCHA.
+- `pageurl`: the URL of the page with the reCAPTCHA challenge.
+
+
+#### reCAPTCHA v3
+
+```ruby
+captcha = client.decode_recaptcha_v3!(
+  googlekey: 'xyz',
+  pageurl:   'http://example.com/example=1',
+  action:    'verify',
+  min_score: 0.3, # OPTIONAL
+)
+
+# The response will be a text (token), which you can access with the `text` method.
+
+captcha.text
+"03AOPBWq_RPO2vLzyk0h8gH0cA2X4v3tpYCPZR6Y4yxKy1s3Eo7CHZRQntxrd..."
+```
+
+*Parameters:*
+
+- `googlekey`: the Google key for the reCAPTCHA.
+- `pageurl`: the URL of the page with the reCAPTCHA challenge.
+- `action`: the action name used by the CAPTCHA.
+- `min_score`: optional parameter. The minimal score needed for the CAPTCHA resolution. Defaults to `0.3`.
+
+> About the `action` parameter: in order to find out what this is, you need to inspect the JavaScript
+> code of the website looking for a call to the `grecaptcha.execute` function.
+>
+> ```javascript
+> // Example
+> grecaptcha.execute('6Lc2fhwTAAAAAGatXTzFYfvlQMI2T7B6ji8UVV_f', { action: "examples/v3scores" })
+> ````
+
+> About the `min_score` parameter: it's strongly recommended to use a minimum score of `0.3` as higher
+> scores are rare.
+
+#### hCaptcha
+
+```ruby
+captcha = client.decode_hcaptcha!(
+  sitekey: 'xyz',
+  pageurl: 'http://example.com/example=1',
+)
+
+captcha.text
+"P0_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiNnpWV..."
+```
+
+*Parameters:*
+
+- `website_key`: the site key for the hCatpcha.
+- `website_url`: the URL of the page with the hCaptcha challenge.
+
+### 3. Using proxy or other custom options
+
+You are allowed to use custom options like `proxy`, `proxytype` or `userAgent` whenever the
+2Captcha API supports it. Example:
 
   ```ruby
   options = {
-    googlekey: 'xyz',
+    sitekey:   'xyz',
     pageurl:   'http://example.com/example=1',
-    action:    'verify',
-    min_score: 0.3
-  }
-
-  captcha = client.decode_recaptcha_v3(options)
-  captcha.text        # Solution of the captcha
-  captcha.id          # Numeric ID of the captcha solved by TwoCaptcha
-  ```
-
-The solution (`captcha.text`) will be a code that validates the form, like the
-following:
-
-  ```ruby
-  "1JJHJ_VuuHAqJKxcaasbTsqw-L1Sm4gD57PTeaEr9-MaETG1vfu2H5zlcwkjsRoZoHxx6V9yUDw8Ig-hYD8kakmSnnjNQd50w_Y_tI3aDLp-s_7ZmhH6pcaoWWsid5hdtMXyvrP9DscDuCLBf7etLle8caPWSaYCpAq9DOTtj5NpSg6-OeCJdGdkjsakFUMeGeqmje87wSajcjmdjl_w4XZBY2zy8fUH6XoAGZ6AeCTulIljBQDObQynKDd-rutPvKNxZasDk-LbhTfw508g1lu9io6jnvm3kbAdnkfZ0x0PkGiUMHU7hnuoW6bXo2Yn_Zt5tDWL7N7wFtY6B0k7cTy73f8er508zReOuoyz2NqL8smDCmcJu05ajkPGt20qzpURMwHaw"
-  ```
-
-## hCaptcha
-
-  This method allows you to solve hCaptcha.
-
-  There are two methods available:
-
-  - `decode_hcaptcha`: solves hCaptcha CAPTCHAs. It doesn't raise exceptions.
-  - `decode_hcaptcha!`: solves hCaptcha CAPTCHAs. It may raise an error if something goes wrong.
-
-  **Send the `sitekey` and `pageurl` parameters**
-
-  This method requires no browser emulation. You can send two parameters that
-  identify the website in which the CAPTCHA is found.
-
-  ```ruby
-  options = {
-    sitekey: 'xyz',
-    pageurl: 'http://example.com/example=1'
-  }
-
-  captcha = client.decode_hcaptcha!(options)
-  captcha.text # Solution of the captcha
-  ```
-
-## Using proxy or other custom options
-
-You are allowed to use custom options like `proxy`, `proxytype` or `userAgent` whenever the 2Captcha API supports it. Example:
-
-  ```ruby
-  options = {
-    sitekey: 'xyz',
-    pageurl: 'http://example.com/example=1',
-    proxy: 'login:password@123.123.123.123:3128',
-    userAgent: 'user agent'
+    proxy:     'login:password@123.123.123.123:3128',
+    userAgent: 'user agent',
   }
 
   captcha = client.decode_hcaptcha!(options)
   ```
+
+### 4. Retrieve a previously solved CAPTCHA
+
+```ruby
+captcha = client.captcha('130920620') # with 130920620 being the CAPTCHA id
+```
+
+### 5. Report an incorrectly solved CAPTCHA for a refund
+
+```ruby
+client.report!('130920620', 'reportbad') # with 130920620 being the CAPTCHA id
+# returns `true` if successfully reported
+
+client.report!('256892751', 'reportgood') # with 256892751 being the CAPTCHA id
+# returns `true` if successfully reported
+```
+
+### 6. Get your account balance
+
+```ruby
+client.balance
+# returns a Float balance in USD.
+```
+
+### 7. Get usage statistics for a specific date
+
+```ruby
+client.stats(Date.new(2022, 10, 7))
+# returns an XML string with your usage statistics.
+```
 
 ## Notes
 
-#### Thread-safety
+### Thread-safety
 
 The API is thread-safe, which means it is perfectly fine to share a client
 instance between multiple threads.
 
-#### Ruby dependencies
+### Ruby dependencies
 
 TwoCaptcha don't require specific dependencies. That saves you memory and
 avoid conflicts with other gems.
 
-#### Input image format
+### Input image format
 
-Any format you use in the decode method (url, file, path, raw, raw64) will
-always be converted to a raw64, which is a binary base64 encoded string. So, if
-you already have this format available on your side, there's no need to do
-convertions before calling the API.
+Any format you use in the `decode_image!` method (`url`, `file`, `path`, `raw` or `raw64`)
+will always be converted to a `raw64`, which is a base64-encoded binary string.
+So, if you already have this format on your end, there is no need for convertions
+before calling the API.
 
 > Our recomendation is to never convert your image format, unless needed. Let
 > the gem convert internally. It may save you resources (CPU, memory and IO).
 
-#### Versioning
+### Versioning
 
 TwoCaptcha gem uses [Semantic Versioning](http://semver.org/).
 
-#### Tested Ruby versions
-
-* MRI 2.2.2
-* MRI 2.2.0
-* MRI 2.1.4
-* MRI 2.0.0
-
-## Contributing
+### Contributing
 
 1. Fork it ( https://github.com/infosimples/two_captcha/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
@@ -288,4 +221,4 @@ https://github.com/infosimples/two_captcha/graphs/contributors
 
 # License
 
-MIT License. Copyright (C) 2011-2015 Infosimples. https://infosimples.com/
+MIT License. Copyright (C) 2011-2022 Infosimples. https://infosimples.com/

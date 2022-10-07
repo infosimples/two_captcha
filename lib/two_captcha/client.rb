@@ -30,11 +30,12 @@ module TwoCaptcha
     # @return [TwoCaptcha::Captcha] The captcha (with solution) or an empty
     #                               captcha instance if something goes wrong.
     #
-    def decode(options = {})
-      decode!(options)
+    def decode_image(options = {})
+      decode_image!(options)
     rescue TwoCaptcha::Error => ex
       TwoCaptcha::Captcha.new
     end
+    alias :decode :decode_image
 
     # Decode the text from an image (i.e. solve a captcha).
     #
@@ -60,7 +61,7 @@ module TwoCaptcha
     # @return [TwoCaptcha::Captcha] The captcha (with solution) if an error is
     #                               not raised.
     #
-    def decode!(options = {})
+    def decode_image!(options = {})
       started_at = Time.now
 
       raw64 = load_captcha(options)
@@ -77,6 +78,7 @@ module TwoCaptcha
 
       decoded_captcha
     end
+    alias :decode! :decode_image!
 
     #
     # Solve reCAPTCHA v2.
