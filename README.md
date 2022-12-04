@@ -2,9 +2,6 @@
 
 TwoCaptcha is a Ruby API for 2Captcha - [2Captcha.com](http://2captcha.com/?from=1025109)
 
-> We suggest you to also check the recommended CAPTCHA provider DeathByCaptcha.
-> The gem for this provider is available at https://github.com/infosimples/deathbycaptcha.
-
 ## Installation
 
 Add this line to your application's Gemfile:
