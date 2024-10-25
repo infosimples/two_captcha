@@ -98,7 +98,7 @@ module TwoCaptcha
     #
     # @param [Hash] options Options hash.
     # @option options [String]  :googlekey The open key of the site in which recaptcha is installed.
-    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    # @option options [String]  :pageurl The URL of the page where the recaptcha is present.
     #
     # @return [TwoCaptcha::Captcha] The solution of the given captcha.
     #
@@ -138,7 +138,7 @@ module TwoCaptcha
     #
     # @param [Hash] options Options hash.
     # @option options [String]  :googlekey The open key of the site in which recaptcha is installed.
-    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    # @option options [String]  :pageurl The URL of the page where the recaptcha is present.
     # @option options [String]  :action The action paramenter present on the page that uses recaptcha.
     # @option options [String]  :min_score The minimum score necessary to pass the challenge.
     #
@@ -183,7 +183,7 @@ module TwoCaptcha
     #
     # @param [Hash] options Options hash.
     # @option options [String]  :sitekey The  key of the site in which hCaptcha is installed.
-    # @option options [String]  :pageurl The URL of the page where the recaptcha is encountered.
+    # @option options [String]  :pageurl The URL of the page where the hCaptcha is present.
     #
     # @return [TwoCaptcha::Captcha] The solution of the given captcha.
     #
@@ -193,6 +193,49 @@ module TwoCaptcha
       fail(TwoCaptcha::SiteKey) if options[:sitekey].empty?
 
       upload_options = { method: 'hcaptcha' }.merge(options)
+      decoded_captcha = upload(upload_options)
+
+      # pool untill the answer is ready
+      while decoded_captcha.text.to_s.empty?
+        sleep([polling, 10].max) # sleep at least 10 seconds
+        decoded_captcha = captcha(decoded_captcha.id)
+        fail TwoCaptcha::Timeout if (Time.now - started_at) > timeout
+      end
+
+      decoded_captcha
+    end
+
+    # Solve Amazon WAF.
+    #
+    # @param [Hash] options Options hash. Check docs for the method decode_amazon_waf!.
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_amazon_waf(options = {})
+      decode_amazon_waf!(opt)
+    rescue TwoCaptcha::Error => ex
+      TwoCaptcha::Captcha.new
+    end
+
+    #
+    # Solve Amazon WAF.
+    #
+    # @param [Hash] options Options hash.
+    # @option options [String]  :sitekey The  key of the site in which Amazon WAF is installed.
+    # @option options [String]  :pageurl The URL of the page where the Amazon WAF is present.
+    # @option options [String]  :iv The value of the `iv` parameter found on the page.
+    # @option options [String]  :context The value of the `context` parameter found on the page.
+    # @option options [String]  :challenge_script The source URL of challenge.js script on the page.
+    # @option options [String]  :captcha_script The source URL of captcha.js script on the page
+    #
+    # @return [TwoCaptcha::Captcha] The solution of the given captcha.
+    #
+    def decode_amazon_waf!(options = {})
+      started_at = Time.now
+
+      fail(TwoCaptcha::ArgumentError) if options[:sitekey].empty? || options[:pageurl].empty? || options[:iv].empty? || options[:context].empty?
+
+      upload_options = { method: 'amazon_waf' }.merge(options)
       decoded_captcha = upload(upload_options)
 
       # pool untill the answer is ready

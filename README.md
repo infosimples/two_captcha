@@ -125,6 +125,21 @@ captcha.text
 "P0_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiNnpWV..."
 ```
 
+#### Amazon WAF
+
+```ruby
+captcha = client.decode_amazon_waf!(
+  sitekey:          'xyz',
+  pageurl:          'http://example.com/example=1',
+  iv:               'A1A1A1A1A1A1A1A1',
+  context:          'ABcd...',
+  challenge_script: 'http://example.com/challenge.js',
+)
+
+puts captcha.text
+{"captcha_voucher":"eyJ0...","existing_token":"f2ae6..."}
+```
+
 *Parameters:*
 
 - `website_key`: the site key for the hCatpcha.
