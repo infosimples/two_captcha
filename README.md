@@ -113,18 +113,6 @@ captcha.text
 > About the `min_score` parameter: it's strongly recommended to use a minimum score of `0.3` as higher
 > scores are rare.
 
-#### hCaptcha
-
-```ruby
-captcha = client.decode_hcaptcha!(
-  sitekey: 'xyz',
-  pageurl: 'http://example.com/example=1',
-)
-
-captcha.text
-"P0_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwYXNza2V5IjoiNnpWV..."
-```
-
 #### Amazon WAF
 
 ```ruby
@@ -143,7 +131,7 @@ puts captcha.text
 *Parameters:*
 
 - `website_key`: the site key for the hCatpcha.
-- `website_url`: the URL of the page with the hCaptcha challenge.
+- `website_url`: the URL of the page with the challenge.
 
 ### 3. Using proxy or other custom options
 
@@ -157,8 +145,6 @@ You are allowed to use custom options like `proxy`, `proxytype` or `userAgent` w
     proxy:     'login:password@123.123.123.123:3128',
     userAgent: 'user agent',
   }
-
-  captcha = client.decode_hcaptcha!(options)
   ```
 
 ### 4. Retrieve a previously solved CAPTCHA
